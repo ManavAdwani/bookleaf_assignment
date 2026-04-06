@@ -41,7 +41,6 @@ While executing this assignment, I made the following practical design assumptio
 ---
 
 ## 🏗 Architecture Decisions & Trade-offs
-We designed this full-stack portal prioritizing two major goals: **simplicity** and **robustness**. 
 
 1. **Frontend (React.js):** Decided to use a clean Create React App (SPA) rather than heavily-layered Next.js SSR, as the core requirement was a deeply interactive, state-heavy dashboard. React's `useEffect` and `useState` hooks provided incredibly fast, near real-time rendering for ticket polling without unnecessary complexity.
 2. **Backend (Django + DRF):** Selected for its phenomenal Model-View-Controller framework and out-of-the-box REST API capabilities. Using `ModelViewSets` provided highly robust CRUD operations, instantly bringing built-in JSON input validation and predictable 400-level error responses.
@@ -88,9 +87,3 @@ All endpoints are protected by `JWT IsAuthenticated` permissions (except signup/
 *   `POST /api/internal_notes/`: (Admin Only) Stores a private note invisible to the author.
 
 ---
-
-## 🛠 Future Improvements
-If given more time to evolve this into a scaled production system:
-1. **WebSockets:** The current React app uses short-polling (`setInterval()`) to simulate near real-time updates for chat. I would migrate this to Django Channels / WebSockets for true real-time, bi-directional event pushing.
-2. **S3 Filestorage:** The current File Attachment UI is built specifically as a mock. I would link it to AWS S3 using `boto3` to securely host PDF/Screenshot payloads.
-3. **Redis Caching:** Large static components (like global Book queries) could be cached in Redis rather than hitting the MySQL disk on every reload.
