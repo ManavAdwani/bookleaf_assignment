@@ -1,0 +1,123 @@
+/* Basic UI Reset and styles */
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f4f7f6;
+  color: #333;
+}
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+.nav-links a {
+  margin-left: 15px;
+  text-decoration: none;
+  color: #0066cc;
+  font-weight: 500;
+}
+.nav-links a:hover {
+  text-decoration: underline;
+}
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+button {
+  background: #0066cc;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+button:hover {
+  background: #0052a3;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.login-container {
+  max-width: 400px;
+  margin: 100px auto;
+}
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+}
+.status-Open { background: #e3f2fd; color: #1976d2; }
+.status-InProgress { background: #fff3e0; color: #f57c00; }
+.status-Resolved { background: #e8f5e9; color: #388e3c; }
+.status-Closed { background: #ffebee; color: #d32f2f; }
+
+.chat-box {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: #fafafa;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.message {
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  max-width: 80%;
+}
+.message.author { background: #e3f2fd; margin-left: auto; }
+.message.admin { background: #fff; border: 1px solid #ddd; }
+.message.internal { background: #fff3e0; border: 1px dashed #f57c00; }
+
+.ai-draft-box {
+  background: #f1f8ff;
+  border: 1px solid #cce5ff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
