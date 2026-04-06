@@ -1,8 +1,5 @@
 # BookLeaf Author Support & Communication Portal
 
-## 🚀 Live Demo & Credentials
-*(Add your Vercel/Railway Live URL here)*
-
 **Admin Login:** `admin@bookleaf.com` | Password: `admin123`
 **Author Login:** `john_author@bookleaf.com` | Password: `author123`
 
