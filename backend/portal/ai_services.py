@@ -76,29 +76,35 @@ def process_new_ticket(ticket_description, author_email=None):
     """
     
     import re
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
-        )
-        text = response.text.strip()
-        
-        # Robustly parse Category
-        cat_match = re.search(r'\*?\*?CATEGORY:\*?\*?\s*(.*)', text, re.IGNORECASE)
-        if cat_match:
-            result['category'] = cat_match.group(1).strip()
-            
-        # Robustly parse Priority
-        pri_match = re.search(r'\*?\*?PRIORITY:\*?\*?\s*(.*)', text, re.IGNORECASE)
-        if pri_match:
-            result['priority'] = pri_match.group(1).strip()
-            
-        # Robustly parse Response (capture everything after RESPONSE:)
-        res_match = re.search(r'\*?\*?RESPONSE:\*?\*?\s*(.*)', text, re.IGNORECASE | re.DOTALL)
-        if res_match:
-            result['draft_response'] = res_match.group(1).strip()
-            
-    except Exception as e:
-        print(f"Error communicating with Gemini: {e}")
+    # Try preferred model, fall back to stable model
+    for model_name in ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash']:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+            )
+            text = response.text.strip()
+
+            # Robustly parse Category
+            cat_match = re.search(r'\*?\*?CATEGORY:\*?\*?\s*(.*)', text, re.IGNORECASE)
+            if cat_match:
+                result['category'] = cat_match.group(1).strip()
+
+            # Robustly parse Priority
+            pri_match = re.search(r'\*?\*?PRIORITY:\*?\*?\s*(.*)', text, re.IGNORECASE)
+            if pri_match:
+                result['priority'] = pri_match.group(1).strip()
+
+            # Robustly parse Response (capture everything after RESPONSE:)
+            res_match = re.search(r'\*?\*?RESPONSE:\*?\*?\s*(.*)', text, re.IGNORECASE | re.DOTALL)
+            if res_match:
+                result['draft_response'] = res_match.group(1).strip()
+
+            print(f"AI processed ticket successfully using model: {model_name}")
+            break  # Success — stop trying other models
+
+        except Exception as e:
+            print(f"Error with model {model_name}: {e}")
+            continue  # Try next model
         
     return result
