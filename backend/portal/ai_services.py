@@ -76,8 +76,8 @@ def process_new_ticket(ticket_description, author_email=None):
     """
     
     import re
-    # Try preferred model, fall back to stable model
-    for model_name in ['gemini-2.5-flash', 'gemini-1.5-flash', 'gemini-2.0-flash']:
+    # Try models in order — most capable to most available
+    for model_name in ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']:
         try:
             response = client.models.generate_content(
                 model=model_name,
