@@ -108,3 +108,70 @@ TICKET:
             continue
 
     return result
+
+
+def generate_reply_draft(ticket, new_message_text, author_email=None):
+    """
+    Called when an author sends a follow-up message.
+    Builds full conversation context and generates a fresh AI draft reply for admin.
+    Returns a string or None if AI is unavailable.
+    """
+    client = get_ai_client()
+    if not client:
+        return None
+
+    # Get author context from knowledge base
+    specific_author_context = "No specific author data found."
+    if author_email and isinstance(AUTHOR_KNOWLEDGE_BASE, dict):
+        for a in AUTHOR_KNOWLEDGE_BASE.get("authors", []):
+            if a.get('email') == author_email:
+                specific_author_context = json.dumps(a, indent=2)
+                break
+
+    # Build conversation history
+    history_lines = [
+        f"[Original Ticket] {ticket.author.get_full_name()}: {ticket.description}"
+    ]
+    for msg in ticket.messages.order_by('created_at'):
+        role_label = "Author" if msg.sender.role == 'author' else "Support Admin"
+        history_lines.append(f"[{role_label}] {msg.sender.get_full_name()}: {msg.text}")
+    history_lines.append(
+        f"[New Reply - Author] {ticket.author.get_full_name()}: {new_message_text}"
+    )
+    conversation = "\n".join(history_lines)
+
+    prompt = f"""You are a BookLeaf Publishing support assistant responding to an ongoing conversation.
+Be professional, empathetic, and reference author-specific data when relevant.
+
+AUTHOR DATA:
+{specific_author_context}
+
+CONVERSATION:
+{conversation[:2000]}
+
+Write a concise, helpful reply (2-4 sentences) from the BookLeaf support team to the author's latest message.
+Write the reply directly — no labels, no "RESPONSE:" prefix."""
+
+    models = [
+        'llama-3.3-70b-versatile',
+        'llama-3.1-8b-instant',
+        'meta-llama/llama-4-scout-17b-16e-instruct',
+        'deepseek-r1-distill-llama-70b',
+    ]
+
+    for model_name in models:
+        try:
+            completion = client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model=model_name,
+                temperature=0.4,
+                max_tokens=512,
+            )
+            reply = completion.choices[0].message.content.strip()
+            print(f"AI reply draft generated using: {model_name}")
+            return reply
+        except Exception as e:
+            print(f"Reply draft error with {model_name}: {e}")
+            continue
+
+    return None
