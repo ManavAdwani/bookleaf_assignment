@@ -14,46 +14,77 @@ body {
   margin: 0 auto;
   padding: 20px;
 }
+
+/* ── Navbar ─────────────────────────────────────────── */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: white;
-  padding: 15px 30px;
+  padding: 12px 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.navbar h2 {
+  margin: 0;
+  font-size: clamp(14px, 3vw, 20px);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 .nav-links a {
-  margin-left: 15px;
   text-decoration: none;
   color: #0066cc;
   font-weight: 500;
+  font-size: 14px;
 }
-.nav-links a:hover {
-  text-decoration: underline;
-}
+.nav-links a:hover { text-decoration: underline; }
+
+/* ── Cards ──────────────────────────────────────────── */
 .card {
   background: white;
-  padding: 20px;
+  padding: 16px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   margin-bottom: 20px;
+}
+
+/* ── Tables — scrollable on mobile ─────────────────── */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  min-width: 500px; /* forces scroll on small screens */
 }
 th, td {
-  padding: 12px;
+  padding: 10px 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+  font-size: 13px;
+  white-space: nowrap;
 }
 th {
   background-color: #f8f9fa;
   font-weight: 600;
 }
+
+/* ── Buttons ─────────────────────────────────────────── */
 button {
   background: #0066cc;
   color: white;
@@ -62,44 +93,54 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  touch-action: manipulation;
 }
-button:hover {
-  background: #0052a3;
-}
-.form-group {
-  margin-bottom: 15px;
-}
+button:hover { background: #0052a3; }
+button:active { background: #003d7a; }
+
+/* ── Forms ───────────────────────────────────────────── */
+.form-group { margin-bottom: 15px; }
 .form-group label {
   display: block;
   margin-bottom: 5px;
   font-weight: 500;
 }
-.form-group input, .form-group select, .form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 16px; /* prevents iOS zoom on focus */
 }
+
+/* ── Login ───────────────────────────────────────────── */
 .login-container {
   max-width: 400px;
-  margin: 100px auto;
+  margin: 40px auto;
+  padding: 0 16px;
 }
+
+/* ── Status badges ───────────────────────────────────── */
 .status-badge {
   padding: 4px 8px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
+  white-space: nowrap;
 }
-.status-Open { background: #e3f2fd; color: #1976d2; }
-.status-InProgress { background: #fff3e0; color: #f57c00; }
-.status-Resolved { background: #e8f5e9; color: #388e3c; }
-.status-Closed { background: #ffebee; color: #d32f2f; }
+.status-Open        { background: #e3f2fd; color: #1976d2; }
+.status-InProgress  { background: #fff3e0; color: #f57c00; }
+.status-Resolved    { background: #e8f5e9; color: #388e3c; }
+.status-Closed      { background: #ffebee; color: #d32f2f; }
 
+/* ── Chat ────────────────────────────────────────────── */
 .chat-box {
   border: 1px solid #eee;
   border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
+  padding: 16px;
+  margin-bottom: 16px;
   background: #fafafa;
   max-height: 400px;
   overflow-y: auto;
@@ -108,16 +149,136 @@ button:hover {
   margin-bottom: 15px;
   padding: 10px 15px;
   border-radius: 8px;
-  max-width: 80%;
+  max-width: 85%;
+  word-break: break-word;
 }
-.message.author { background: #e3f2fd; margin-left: auto; }
-.message.admin { background: #fff; border: 1px solid #ddd; }
+.message.author   { background: #e3f2fd; margin-left: auto; }
+.message.admin    { background: #fff; border: 1px solid #ddd; }
 .message.internal { background: #fff3e0; border: 1px dashed #f57c00; }
 
+/* ── AI draft ────────────────────────────────────────── */
 .ai-draft-box {
   background: #f1f8ff;
   border: 1px solid #cce5ff;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 20px;
+}
+
+/* ── Ticket detail two-column layout ────────────────── */
+.ticket-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.ticket-layout-main  { flex: 2; min-width: 0; }
+.ticket-layout-side  { flex: 1; min-width: 0; }
+
+/* ── Filter bar ──────────────────────────────────────── */
+.filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  align-items: flex-end;
+}
+.filter-bar select,
+.filter-bar input {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  min-width: 110px;
+  max-width: 160px;
+}
+.filter-bar label {
+  display: block;
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 3px;
+}
+
+/* ── Message send form ───────────────────────────────── */
+.send-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.send-form input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  min-width: 0;
+}
+
+/* ══════════════════════════════════════════════════════
+   MOBILE  ≤ 768px
+══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
+  }
+
+  /* Ticket detail stacks vertically */
+  .ticket-layout {
+    flex-direction: column;
+  }
+  .ticket-layout-main,
+  .ticket-layout-side {
+    flex: none;
+    width: 100%;
+  }
+
+  /* Chat message full width */
+  .message {
+    max-width: 95%;
+  }
+
+  /* Send form stacks on very small screens */
+  .send-form {
+    flex-direction: column;
+  }
+  .send-form input {
+    width: 100%;
+  }
+  .send-form button {
+    width: 100%;
+  }
+
+  /* Filter bar full width selects */
+  .filter-bar select,
+  .filter-bar input {
+    min-width: 100%;
+    max-width: 100%;
+    flex: 1 1 calc(50% - 6px);
+  }
+
+  /* Login centered with padding */
+  .login-container {
+    margin: 24px auto;
+  }
+
+  /* Cards less padding */
+  .card {
+    padding: 12px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   EXTRA SMALL  ≤ 480px
+══════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px 14px;
+  }
+  button {
+    font-size: 13px;
+    padding: 9px 12px;
+  }
+  .filter-bar select,
+  .filter-bar input {
+    flex: 1 1 100%;
+  }
 }

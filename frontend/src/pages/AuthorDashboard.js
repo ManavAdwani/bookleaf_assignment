@@ -33,6 +33,7 @@ function AuthorDashboard() {
 
       <div className="card">
         <h3>My Books</h3>
+        <div className="table-wrapper">
         <table>
           <thead>
             <tr>
@@ -68,6 +69,7 @@ function AuthorDashboard() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );

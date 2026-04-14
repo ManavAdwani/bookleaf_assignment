@@ -102,9 +102,9 @@ function TicketDetail() {
         </div>
       </nav>
 
-      <div style={{ display: 'flex', gap: 20 }}>
+      <div className="ticket-layout">
         {/* Left Column: Chat */}
-        <div style={{ flex: 2 }}>
+        <div className="ticket-layout-main">
           <div className="card">
             <h3>Conversation</h3>
             <div className="chat-box">
@@ -121,13 +121,12 @@ function TicketDetail() {
               ))}
             </div>
 
-            <form onSubmit={handleSendMessage} style={{ display: 'flex', gap: 10 }}>
+            <form onSubmit={handleSendMessage} className="send-form">
               <input 
                 type="text" 
                 value={newMessage} 
                 onChange={e => setNewMessage(e.target.value)}
                 placeholder="Type your response here..." 
-                style={{ flex: 1, padding: 10 }}
               />
               <button type="submit">Send</button>
             </form>
@@ -135,7 +134,7 @@ function TicketDetail() {
         </div>
 
         {/* Right Column: Details & Admin Actions */}
-        <div style={{ flex: 1 }}>
+        <div className="ticket-layout-side">
           <div className="card">
             <h3>Ticket Details</h3>
             <p><strong>Status:</strong> {ticket.status}</p>

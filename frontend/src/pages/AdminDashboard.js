@@ -60,7 +60,7 @@ function AdminDashboard() {
       </nav>
 
       <div className="card">
-        <div style={{ marginBottom: 20, display: 'flex', gap: 15, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="filter-bar">
           <div>
             <label style={{display:'block', fontSize:12, color:'#666', marginBottom:4}}>Status</label>
             <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: 5, minWidth: 120 }}>
@@ -99,6 +99,7 @@ function AdminDashboard() {
           </div>
         </div>
 
+        <div className="table-wrapper">
         <table>
           <thead>
             <tr>
@@ -130,6 +131,7 @@ function AdminDashboard() {
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </>
   );
