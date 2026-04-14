@@ -30,7 +30,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-xub91&j_1o#13q_9=&+41
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Allow all Railway & Vercel subdomains automatically
+ALLOWED_HOSTS += ['.railway.app', '.up.railway.app']
 
 
 # Application definition
@@ -51,6 +53,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serves static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -85,11 +88,12 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME', 'bookleaf'),
-        'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'root'),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '3306'),
+        # Railway provides MYSQLHOST etc; fall back to DB_* for local dev
+        'NAME': os.environ.get('MYSQLDATABASE', os.environ.get('DB_NAME', 'bookleaf')),
+        'USER': os.environ.get('MYSQLUSER', os.environ.get('DB_USER', 'root')),
+        'PASSWORD': os.environ.get('MYSQLPASSWORD', os.environ.get('DB_PASSWORD', 'root')),
+        'HOST': os.environ.get('MYSQLHOST', os.environ.get('DB_HOST', 'localhost')),
+        'PORT': os.environ.get('MYSQLPORT', os.environ.get('DB_PORT', '3306')),
     }
 }
 
@@ -130,6 +134,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AUTH_USER_MODEL = 'portal.User'
 # In production, restrict CORS to your Vercel URL
