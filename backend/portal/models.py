@@ -7,19 +7,28 @@ class User(AbstractUser):
         ('admin', 'Admin'),
     )
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='author')
+    author_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    joined_date = models.DateField(null=True, blank=True)
 
 class Book(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='books')
+    book_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
     title = models.CharField(max_length=255)
     isbn = models.CharField(max_length=20, unique=True)
     genre = models.CharField(max_length=100)
-    publication_date = models.DateField()
-    status = models.CharField(max_length=50)
-    mrp = models.DecimalField(max_digits=10, decimal_places=2)
+    publication_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=100)
+    mrp = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    author_royalty_per_copy = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     copies_sold = models.IntegerField(default=0)
     royalty_earned = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     royalty_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     royalty_pending = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    last_royalty_payout_date = models.DateField(null=True, blank=True)
+    print_partner = models.CharField(max_length=100, null=True, blank=True)
+    available_on = models.JSONField(default=list, blank=True)
 
     def __str__(self):
         return self.title
