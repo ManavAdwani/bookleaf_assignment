@@ -1,7 +1,6 @@
 import os
 import json
-from google import genai
-from google.genai import types
+import re
 
 # Load Knowledge Base Data once
 try:
@@ -11,16 +10,20 @@ try:
 except Exception:
     AUTHOR_KNOWLEDGE_BASE = {}
 
+
 def get_ai_client():
-    # Load from environment variables (secured in backend/.env)
-    api_key = os.environ.get("GEMINI_API_KEY")
+    """Returns a Groq client if API key is available, else None."""
+    api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
+        print("GROQ_API_KEY not set.")
         return None
     try:
-        return genai.Client(api_key=api_key)
+        from groq import Groq
+        return Groq(api_key=api_key)
     except Exception as e:
-        print(f"Error initializing Gemini client: {e}")
+        print(f"Error initializing Groq client: {e}")
         return None
+
 
 def process_new_ticket(ticket_description, author_email=None):
     """
@@ -30,7 +33,7 @@ def process_new_ticket(ticket_description, author_email=None):
     - draft_response
     """
     client = get_ai_client()
-    
+
     # Cost Optimization: Only extract the specific author's data to save tokens!
     specific_author_context = "No specific author data found in KB."
     if author_email and isinstance(AUTHOR_KNOWLEDGE_BASE, dict):
@@ -39,63 +42,55 @@ def process_new_ticket(ticket_description, author_email=None):
             if a.get('email') == author_email:
                 specific_author_context = json.dumps(a, indent=2)
                 break
-    
-    # Fallback response
+
+    # Fallback response if AI unavailable
     result = {
         "category": "General",
         "priority": "Medium",
         "draft_response": "Write manually. (AI Service unavailable)"
     }
-    
+
     if not client:
         return result
 
-    prompt = f"""
-    SYSTEM PROMPT:
-    You are a BookLeaf Publishing support assistant.
-    Be professional, empathetic, and specific.
-    Always provide clear next steps.
-    Do not give generic answers.
-    
-    CONTEXT (Author Database):
-    Here are the specific details of the author raising this ticket. Use this data to accurately answer any questions regarding their royalties, copies sold, ISBNs, book status, etc.
-    {specific_author_context}
-    
-    TASK: Analyze the following ticket description and provide:
-    1. Category (Choose from: Royalty & Payments, ISBN & Metadata Issues, Printing & Quality, Distribution & Availability, Book Status & Production Updates, General Inquiry)
-    2. Priority (Choose from: Critical, High, Medium, Low)
-    3. Draft Response (A professional reply to the user)
-    
-    Format the output EXACTLY as follows (3 lines):
-    CATEGORY: [category]
-    PRIORITY: [priority]
-    RESPONSE: [response]
-    
-    USER INPUT (Ticket Description - Truncated to save tokens):
-    {ticket_description[:1000]}
-    """
-    
-    import re
-    # Try models in order — most capable to most available
-    for model_name in ['gemini-2.0-flash', 'gemini-2.0-flash-lite', 'gemini-1.5-flash']:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt,
-            )
-            text = response.text.strip()
+    prompt = f"""You are a BookLeaf Publishing support assistant.
+Be professional, empathetic, and specific. Always provide clear next steps.
 
-            # Robustly parse Category
+AUTHOR DATA (use this to answer questions about royalties, books, ISBNs, status):
+{specific_author_context}
+
+Analyze the following support ticket and respond EXACTLY in this format (3 lines, no extra text):
+CATEGORY: [choose one: Royalty & Payments, ISBN & Metadata Issues, Printing & Quality, Distribution & Availability, Book Status & Production Updates, General Inquiry]
+PRIORITY: [choose one: Critical, High, Medium, Low]
+RESPONSE: [professional reply to the author using their actual data]
+
+TICKET:
+{ticket_description[:1000]}"""
+
+    # Try models in order
+    models = ['llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'gemma2-9b-it']
+
+    for model_name in models:
+        try:
+            chat_completion = client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model=model_name,
+                temperature=0.4,
+                max_tokens=1024,
+            )
+            text = chat_completion.choices[0].message.content.strip()
+
+            # Parse Category
             cat_match = re.search(r'\*?\*?CATEGORY:\*?\*?\s*(.*)', text, re.IGNORECASE)
             if cat_match:
                 result['category'] = cat_match.group(1).strip()
 
-            # Robustly parse Priority
+            # Parse Priority
             pri_match = re.search(r'\*?\*?PRIORITY:\*?\*?\s*(.*)', text, re.IGNORECASE)
             if pri_match:
                 result['priority'] = pri_match.group(1).strip()
 
-            # Robustly parse Response (capture everything after RESPONSE:)
+            # Parse Response (everything after RESPONSE:)
             res_match = re.search(r'\*?\*?RESPONSE:\*?\*?\s*(.*)', text, re.IGNORECASE | re.DOTALL)
             if res_match:
                 result['draft_response'] = res_match.group(1).strip()
@@ -105,6 +100,6 @@ def process_new_ticket(ticket_description, author_email=None):
 
         except Exception as e:
             print(f"Error with model {model_name}: {e}")
-            continue  # Try next model
-        
+            continue
+
     return result
