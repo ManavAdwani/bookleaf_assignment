@@ -67,8 +67,13 @@ RESPONSE: [professional reply to the author using their actual data]
 TICKET:
 {ticket_description[:1000]}"""
 
-    # Try models in order
-    models = ['llama3-70b-8192', 'llama3-8b-8192', 'mixtral-8x7b-32768', 'gemma2-9b-it']
+    # Current active Groq models (updated April 2026)
+    models = [
+        'llama-3.3-70b-versatile',
+        'llama-3.1-8b-instant',
+        'meta-llama/llama-4-scout-17b-16e-instruct',
+        'deepseek-r1-distill-llama-70b',
+    ]
 
     for model_name in models:
         try:
